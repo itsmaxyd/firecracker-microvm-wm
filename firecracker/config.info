@@ -1,0 +1,11 @@
+firecracker_bin=0,Firecracker binary path
+socket_dir=0,Directory for VM Unix sockets
+state_dir=0,VM state/config JSON directory
+kernel_dir=0,Directory containing VM kernel images
+rootfs_dir=0,Directory containing root filesystem images
+log_dir=0,Directory for VM log files
+network_dir=0,Network metadata directory
+network_subnet=0,MicroVM network subnet (CIDR)
+network_gateway=0,Gateway IP for microVMs
+tap_prefix=0,Prefix for TAP interface names
+max_vms=3,100,Maximum VMs allowed

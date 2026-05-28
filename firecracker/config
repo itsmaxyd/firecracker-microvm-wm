@@ -1,0 +1,11 @@
+firecracker_bin=/usr/local/bin/firecracker
+socket_dir=/var/run/firecracker
+state_dir=/var/lib/firecracker-webmin/vms
+kernel_dir=/var/lib/firecracker-webmin/kernels
+rootfs_dir=/var/lib/firecracker-webmin/rootfs
+log_dir=/var/log/firecracker
+network_dir=/var/lib/firecracker-webmin/network
+network_subnet=172.16.100.0/24
+network_gateway=172.16.100.1
+tap_prefix=fctap
+max_vms=100
