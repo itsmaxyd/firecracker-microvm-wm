@@ -1,13 +1,10 @@
-package firecracker_lib;
-
-use strict;
-use warnings;
+# Firecracker Webmin module library
 use JSON::PP qw(encode_json decode_json);
-use POSIX qw(strftime WNOHANG);
+use POSIX qw(strftime);
 use Time::HiRes qw(usleep);
-use WebminCore;
 
-our (%config, %text, %access);
+use WebminCore;
+our (%config, %text, %access, %in);
 &init_config();
 
 sub _ensure_dirs {
@@ -78,6 +75,37 @@ sub list_all_vms {
   my @vms = sort map { s/\.json$//r } grep { $_ =~ /\.json$/ } readdir($dh);
   closedir($dh);
   return @vms;
+}
+
+sub _is_kernel_name {
+  my ($base) = @_;
+  return 1 if $base =~ /^vmlinux/i;
+  return 1 if $base =~ /\.(bin|img)$/i;
+  return 0;
+}
+
+sub _is_rootfs_name {
+  my ($base) = @_;
+  return $base =~ /\.(ext4|img|sqsh|raw)$/i;
+}
+
+sub list_image_options {
+  my ($dir, $matcher) = @_;
+  return () if !$dir || !-d $dir;
+  opendir(my $dh, $dir) || return ();
+  my @names = sort grep {
+    $_ ne '.' && $_ ne '..' && -f "$dir/$_" && &$matcher($_)
+  } readdir($dh);
+  closedir($dh);
+  return map { [ "$dir/$_", $_ ] } @names;
+}
+
+sub list_kernel_options {
+  return list_image_options($config{'kernel_dir'}, \&_is_kernel_name);
+}
+
+sub list_rootfs_options {
+  return list_image_options($config{'rootfs_dir'}, \&_is_rootfs_name);
 }
 
 sub _run_cmd {

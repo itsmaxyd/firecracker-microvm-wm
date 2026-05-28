@@ -1,6 +1,6 @@
 name=firecracker
 desc=Firecracker MicroVM Manager
-version=0.1
-os_support=linux
+version=0.1.2
+os_support=*
 category=system
 depends=

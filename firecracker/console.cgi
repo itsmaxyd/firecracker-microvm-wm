@@ -1,31 +1,29 @@
 #!/usr/bin/perl
-use strict;
-use warnings;
 use JSON::PP qw(encode_json);
-use WebminCore;
-require './firecracker_lib.pl';
-require './fc_console_lib.pl';
+require './firecracker-lib.pl';
+require './fc-console-lib.pl';
 
 &ReadParse();
 my $name = $in{'vm'} || '';
 
 if ($in{'poll'}) {
-  &error('Invalid VM') if !firecracker_lib::vm_name_valid($name);
+  &error(&text('create_err_name')) if !vm_name_valid($name);
   my $offset = int($in{'offset'} || 0);
-  my ($text, $new_offset) = fc_console_lib::get_log_tail($name, $offset, 32768);
+  my ($log_chunk, $new_offset) = get_log_tail($name, $offset, 32768);
   print "Content-type: application/json\n\n";
-  print encode_json({ text => $text, offset => $new_offset });
+  print encode_json({ text => $log_chunk, offset => $new_offset });
   exit;
 }
 
-&error('Invalid VM') if !firecracker_lib::vm_name_valid($name);
-my $size = fc_console_lib::get_log_size($name);
+&error(&text('create_err_name')) if !vm_name_valid($name);
+my $size = get_log_size($name);
+my $log_path = vm_log_path($name);
 
-&ui_print_header(undef, "Console - $name", '');
-print "<div style='margin:8px 0'><button onclick='clearConsole();return false;'>Clear</button> ";
-print "<a href='/download$config{'log_dir'}/$name.log'>Download log</a></div>";
+&ui_print_header(undef, &text('console_title', $name), '');
+print "<div style='margin:8px 0'><button onclick='clearConsole();return false;'>".&text('console_clear')."</button> ";
+print "<a href='".&get_webprefix()."/download/".&urlize($log_path)."'>".&text('console_download')."</a></div>";
 print "<pre id='console' style='height:420px;overflow:auto;background:#111;color:#ddd;padding:12px;'>";
-print ($size ? '' : "No output yet.\n");
+print ($size ? '' : &text('console_empty')."\n");
 print "</pre>";
 
 print <<'JS';

@@ -79,6 +79,7 @@ tar czf dist/firecracker-0.1.wbm.gz firecracker
 
 ## Notes
 
+- The module package metadata is configured as `os_support=*` so Webmin can install it on multiple Linux distributions.
 - This module assumes root-level privileges for TAP and iptables operations.
 - vCPU/RAM changes are persisted and applied through Firecracker API when possible.
 - For production hardening, use a dedicated Firecracker runner user and sudo rules.

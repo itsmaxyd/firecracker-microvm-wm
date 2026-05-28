@@ -1,12 +1,6 @@
-package fc_network_lib;
-
-use strict;
-use warnings;
+# Firecracker networking helpers
 use JSON::PP qw(encode_json decode_json);
-use WebminCore;
-require './firecracker_lib.pl';
-
-our (%config);
+our (%config, %text, %access);
 
 sub _alloc_path {
   return "$config{'network_dir'}/ip_allocations.json";
@@ -40,7 +34,7 @@ sub _save_allocs {
 }
 
 sub _init_allocs {
-  my ($base, $prefix) = split('/', $config{'network_subnet'});
+  my ($base) = split('/', $config{'network_subnet'});
   my @parts = split(/\./, $base);
   my %allocs = ();
   for my $i (2 .. 254) {
@@ -73,8 +67,8 @@ sub release_ip {
 
 sub next_tap_name {
   my %used;
-  foreach my $name (firecracker_lib::list_all_vms()) {
-    my $s = firecracker_lib::load_vm_state($name);
+  foreach my $name (list_all_vms()) {
+    my $s = load_vm_state($name);
     $used{$s->{'tap_iface'}} = 1 if $s && $s->{'tap_iface'};
   }
   for my $i (0 .. 4096) {
